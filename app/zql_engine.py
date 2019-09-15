@@ -1,38 +1,39 @@
-from __future__ import print_function
+#from __future__ import print_function
 from flask_restful import abort
 from zabbix_api import ZabbixAPI
-import sys, json
+#import sys, json
 
 class ZqlEngine():
 
-    def subIterate(self, dictionary, zquery, action, pk=None, zzquery=[]):
+    def subIterate(self, dictionary, zquery, action, pk=None, result=[]):
         for idx, z in enumerate(zquery):
-            zzquery = []
-            print('\nSZ -> ', z, '\n', file=sys.stderr)
-            hf = hp = hi = None
+            result = []
+            #print('\nSZ -> ', z, '\n', file=sys.stderr)
+            has_filter = has_pk = has_instance = None
 
             for key, value in dictionary.items():
-                if not hf and "filter" in dictionary:
-                    hf = 1
+                if not has_filter and "filter" in dictionary:
+                    has_filter = 1
                     fvalue = {**dictionary['filter'], **{dictionary['fk']:z[pk]}}
-                    print('\nSFILTER ',fvalue, '\n', file=sys.stderr)
-                    szquery = getattr(self.zapi, action).get(fvalue)
-                    zquery[idx][action] = szquery
-                    zzquery += zquery
-                if not hp and "pk" in dictionary:
-                    hp = 1
+                    #print('\nSFILTER ',fvalue, '\n', file=sys.stderr)
+                    sub_zquery = getattr(self.zapi, action).get(fvalue)
+                    zquery[idx][action] = sub_zquery
+                    result += zquery
+                if not has_pk and "pk" in dictionary:
+                    has_pk = 1
                     self.pk = dictionary['pk']
-                if not hi and key != "filter" and isinstance(value, dict):
-                    hi = 1
-                    print('\nSINSTANCE ',value, '\n', file=sys.stderr)
-                    self.subIterate(value, szquery, key, self.pk)
+                if not has_instance and key != "filter" and isinstance(value, dict):
+                    has_instance = 1
+                    #print('\nSINSTANCE ',value, '\n', file=sys.stderr)
+                    self.subIterate(value, sub_zquery, key, self.pk)
                     continue
 
-        return zzquery
+        return result
 
 
     def iterate(self, dictionary, zbx_version_key="zabbix-version"):
         self.result = []
+
         if zbx_version_key in dictionary:
             self.result.append({zbx_version_key:self.zapi.api_version()})
             dictionary.pop(zbx_version_key, None)
@@ -46,7 +47,7 @@ class ZqlEngine():
                 pk = value['pk']
                 value.pop('filter', None)
                 value.pop('pk', None)
-                print('\n',pk,' - ',list(value)[0],' - ',key,' - ',value[list(value)[0]],'\n', file=sys.stderr)
+                #print('\n',pk,' - ',list(value)[0],' - ',key,' - ',value[list(value)[0]],'\n', file=sys.stderr)
                 item[key] = self.subIterate(value[list(value)[0]], zquery, list(value)[0], pk)
 
             self.result.append(item)
