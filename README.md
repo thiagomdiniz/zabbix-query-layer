@@ -66,7 +66,7 @@ Output:
 }
 ```
 
-### Trigger filter
+### Looking for a host and a trigger 
 ```
 curl -H 'Content-type:application/json' -X POST http://localhost/zabbix -d '
 {
