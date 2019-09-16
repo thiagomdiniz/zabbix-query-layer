@@ -6,11 +6,29 @@ A Flask (Python) application to simplify data extraction from Zabbix. It is an A
 
 sudo docker run -d -p 80:80 --name zql thiagomdiniz/zabbix-api-query-layer
 
+## Endpoints
+
+GET /health
+
+POST /zabbix
+
 ## JSON/Payload structure
 
 to do
 
 ## Request examples
+
+### Health status
+```
+curl -H 'Content-type:application/json' http://localhost/health
+```
+
+Output:
+```json
+{
+    "message": "alive"
+}
+```
 
 ### Trigger filter
 ```
