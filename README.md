@@ -40,17 +40,17 @@ We will take the payload below as an example:
 
 ![zql1](/readme_images/zql4.png)
 
-* 1) "server" is a required field. should contain your Zabbix frontend address;
+1. "server" is a required field. should contain your Zabbix frontend address;
 
-* 2) "zabbix-version" is a optional field. When used adds to the response the version of Zabbix queried;
+2. "zabbix-version" is a optional field. When used adds to the response the version of Zabbix queried;
 
-* 3) Is the name of the Zabbix API method that contains the ".get" query;
+3. Is the name of the Zabbix API method that contains the ".get" query;
 
-* 4) "filter" is a required field. Create filter based on Python zabbix-api library. Use {} for empty filter;
+4. "filter" is a required field. Create filter based on Python zabbix-api library. Use {} for empty filter;
 
-* 5) "pk" is a required field only when the query has subqueries. Is the ID / primary key of the object;
+5. "pk" is a required field only when the query has subqueries. Is the ID / primary key of the object;
 
-* 6) "fk" is a required field only for subqueries. Is the field that will be added to the subquery filter with the ID / primary key value of the parent query result.
+6. "fk" is a required field only for subqueries. Is the field that will be added to the subquery filter with the ID / primary key value of the parent query result.
 
 ## Request examples
 
