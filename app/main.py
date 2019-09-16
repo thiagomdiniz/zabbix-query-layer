@@ -1,7 +1,5 @@
-from __future__ import print_function
 from flask import Flask, request, jsonify
-from flask_restful import Resource, Api, reqparse, abort
-import sys, json
+from flask_restful import Resource, Api, abort
 from zql_engine import ZqlEngine
 
 app = Flask(__name__)
@@ -26,8 +24,11 @@ class Zabbix(Resource):
         if not "server" in content:
             abort(500, message="Zabbix server address is missing!")
 
-        zql = ZqlEngine()
-        zql.login(content['server'], username, password)
+        try:
+            zql = ZqlEngine(content['server'], username, password)
+        except:
+            abort(401, message="Zabbix authentication failed")
+
         content.pop('server', None)
         result = zql.iterate(content)
         zql.logout()

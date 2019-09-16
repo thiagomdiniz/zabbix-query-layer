@@ -1,9 +1,11 @@
-#from __future__ import print_function
-from flask_restful import abort
 from zabbix_api import ZabbixAPI
 #import sys, json
 
 class ZqlEngine():
+
+    def __init__(self, server, username, password):
+        self.login(server, username, password)
+
 
     def subIterate(self, dictionary, zquery, action, pk=None, result=[]):
         for idx, z in enumerate(zquery):
@@ -57,10 +59,7 @@ class ZqlEngine():
 
     def login(self, server, username, password):
         self.zapi = ZabbixAPI(server=server, log_level=30, timeout=60, r_query_len=10, validate_certs=False)
-        try:
-            self.zapi.login(username, password)
-        except:
-            abort(401, message="Zabbix authentication failed")
+        self.zapi.login(username, password)
 
 
     def logout(self):
