@@ -1,6 +1,6 @@
 # zabbix-api-query-layer
 
-A Flask (Python) application to simplify data extraction from Zabbix. It is an API that abstracts the ".get()" calls to the Zabbix API.
+A Flask (Python) application to simplify data extraction from Zabbix. It is an API that abstracts the ".get" calls to the Zabbix API and allows you to make multiple requests to the Zabbix API with just one request.
 
 ## Run the application with Docker
 
@@ -8,9 +8,13 @@ sudo docker run -d -p 80:80 --name zql thiagomdiniz/zabbix-api-query-layer
 
 ## Endpoints
 
-GET /health
+* GET /health
 
-POST /zabbix
+Returns http 200 code and a JSON message stating that it is alive.
+
+* POST /zabbix
+
+Requires Basic Auth and a JSON Payload.
 
 ## JSON/Payload structure
 
