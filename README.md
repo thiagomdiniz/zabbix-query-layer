@@ -26,7 +26,7 @@ In ZQL endpoint /zabbix you can submit a query JSON using Zabbix API methods tha
 
 ![zql1](/readme_images/zql1.png)
 
-ZQL allows you to perform nested queries using "pk" (primary key) and "fk" (foreign key) to filter subqueries based on the return of the previous query.
+ZQL allows you to perform nested queries using "pk" (primary key) and "fk" (foreign key) to filter subqueries based on the return of the parent query.
 
 For example, for the host group object the unique identifier / primary key is the "groupid" field:
 
