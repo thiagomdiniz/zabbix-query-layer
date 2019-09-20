@@ -11,7 +11,7 @@ class ZqlEngine():
         for idx, z in enumerate(zquery):
             result = []
             #print('\nSZ -> ', z, '\n', file=sys.stderr)
-            has_filter = has_pk = has_instance = None
+            has_filter = has_pk = None
 
             for key, value in dictionary.items():
                 if not has_filter and "filter" in dictionary:
@@ -24,8 +24,7 @@ class ZqlEngine():
                 if not has_pk and "pk" in dictionary:
                     has_pk = 1
                     self.pk = dictionary['pk']
-                if not has_instance and key != "filter" and isinstance(value, dict):
-                    has_instance = 1
+                if key != "filter" and isinstance(value, dict):
                     #print('\nSINSTANCE ',value, '\n', file=sys.stderr)
                     self.subIterate(value, sub_zquery, key, self.pk)
                     continue
@@ -50,7 +49,9 @@ class ZqlEngine():
                 value.pop('filter', None)
                 value.pop('pk', None)
                 #print('\n',pk,' - ',list(value)[0],' - ',key,' - ',value[list(value)[0]],'\n', file=sys.stderr)
-                item[key] = self.subIterate(value[list(value)[0]], zquery, list(value)[0], pk)
+                for idx, action in enumerate(list(value)):
+                    item[key] = self.subIterate(value[action], zquery, action, pk)
+
 
             self.result.append(item)
 
