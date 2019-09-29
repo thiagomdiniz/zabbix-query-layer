@@ -1,4 +1,5 @@
 import requests
+from base64 import b64encode
 
 class ZqlZabbixAPI():
 
@@ -6,10 +7,13 @@ class ZqlZabbixAPI():
     __auth_token__ = None
     __url__ = None
     __ssl_verify__ = True
+    __basic_auth__ = None
 
-    def __init__(self, address, username, password, ssl_verify=True):
+    def __init__(self, address, username, password, ssl_verify=True, http_auth=False):
         self.__url__ = address + self.__jsonrpc_url__
         self.__ssl_verify__ = ssl_verify
+        if http_auth:
+            self.__basic_auth__ = b64encode(bytes(username + ':' + password, "utf-8")).decode("ascii")
         self.__auth_token__ = self.login(username, password)
 
 
@@ -50,6 +54,9 @@ class ZqlZabbixAPI():
     def doApiRequest(self, payload):
         headers = {'Content-Type': 'application/json-rpc',
                     'User-Agent': 'python/zql'}
+        if self.__basic_auth__:
+            headers['Authorization'] = 'Basic %s' % self.__basic_auth__
+
         if payload:
             try:
                 r = requests.post(self.__url__, headers=headers, json=payload, verify=self.__ssl_verify__)
