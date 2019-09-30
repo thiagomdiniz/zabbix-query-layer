@@ -306,3 +306,58 @@ Output:
 ]
 ```
 
+### Create a host
+```
+curl -H 'Content-type:application/json' -X POST http://localhost/zabbix -d '
+	{
+	   "server":"https://192.168.100.250/zabbix",
+	   "options":["zabbix-version","no-ssl-verify"],
+	   "host.create":{
+	      "params":{
+        	"host": "opaaa",
+        	"interfaces": [
+	            {
+                	"type": 1,
+                	"main": 1,
+                	"useip": 1,
+                	"ip": "192.168.3.1",
+                	"dns": "",
+                	"port": "10050"
+            	}
+        	],
+        	"groups": [
+	            {
+                	"groupid": "2"
+            	}
+        	],
+        	"macros": [
+	            {
+                	"macro": "{$USER_ID}",
+                	"value": "123321"
+            	}
+        	],
+        	"inventory_mode": 0,
+        	"inventory": {
+	            "macaddress_a": "01234",
+            	"macaddress_b": "56768"
+        	}
+    	}
+	   }
+	}' -u YourZabbixUser:YourZabbixPassword
+```
+
+Output:
+```json
+[
+    {
+        "zabbix-version": "4.2.3"
+    },
+    {
+        "host.create": {
+            "hostids": [
+                "10287"
+            ]
+        }
+    }
+]
+```
