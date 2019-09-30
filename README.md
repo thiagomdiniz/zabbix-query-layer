@@ -43,9 +43,9 @@ We will take the payload below as an example:
 1. "server" is a required field. should contain your Zabbix frontend address;
 
 2. "options" is a optional field and can contain the fallowing values in a list:
-  1. "zabbix-version": When used adds to the response the version of Zabbix queried;
-  2. "no-ssl-verify": Use if your Zabbix frontend uses ssl (https) with invalid certificate;
-  3. "http-auth": Use if your Zabbix frontend uses HTTP authentication;
+	1. "zabbix-version": When used adds to the response the version of Zabbix queried;
+	2. "no-ssl-verify": Use if your Zabbix frontend uses ssl (https) with invalid certificate;
+	3. "http-auth": Use if your Zabbix frontend uses HTTP authentication;
 
 3. Is the name of the Zabbix API method;
 
