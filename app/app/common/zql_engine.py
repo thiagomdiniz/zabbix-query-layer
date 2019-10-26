@@ -41,6 +41,13 @@ class ZqlEngine():
         except Exception:
             pass
 
+        if "date-format" in dictionary:
+            self.zbx_api.setDateFormat(dictionary["date-format"])
+            dictionary.pop('date-format', None)
+        if "timestamp-fields" in dictionary:
+            self.zbx_api.setTimestampFields(dictionary["timestamp-fields"])
+            dictionary.pop('timestamp-fields', None)
+
         for key, value in dictionary.items():
             zquery = {}
             if "params" in value:
