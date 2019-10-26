@@ -4,9 +4,6 @@ from app.common.zql_engine import ZqlEngine
 
 class Zabbix(Resource):
 
-    __ssl_verify__ = True
-    __http_auth__ = False
-
     def post(self):
         try:
             username = request.authorization.username
@@ -17,22 +14,17 @@ class Zabbix(Resource):
         content = request.get_json()
         if not "server" in content:
             abort(400, message="Zabbix server address is missing!")
-        if "options" in content:
-            if "no-ssl-verify" in content["options"]:
-                self.__ssl_verify__ = False
-            if "http-auth" in content["options"]:
-                self.__http_auth__ = True
 
         try:
-            zql = ZqlEngine(content['server'], username, password, self.__ssl_verify__, self.__http_auth__)
+            zql = ZqlEngine(content)
+            zql.connectOnZabbix(username, password)
         except Exception as e:
             abort(401, message="Zabbix authentication failed! " + str(e))
 
-        content.pop('server', None)
         try:
             result = {}
-            result['result'] = zql.iterate(content)
-            zql.logout()
+            result['result'] = zql.execute()
+            zql.logoutOfZabbix()
             return result
         except Exception as e:
             abort(400, message=str(e))

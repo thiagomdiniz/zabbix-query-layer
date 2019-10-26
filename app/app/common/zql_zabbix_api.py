@@ -4,22 +4,18 @@ from base64 import b64encode
 
 class ZqlZabbixAPI():
 
-    __jsonrpc_url__ = '/api_jsonrpc.php'
-    __auth_token__ = None
-    __url__ = None
-    __ssl_verify__ = True
-    __basic_auth__ = None
-    __date_format__ = None
-    __timestamp_fields = []
+    JSONRPC_URL = '/api_jsonrpc.php'
+    _basic_auth = None
+    _auth_token = None
 
     def __init__(self, address, username, password, ssl_verify=True, http_auth=False, date_format=None, timestamp_fields=[]):
-        self.__url__ = address + self.__jsonrpc_url__
-        self.__ssl_verify__ = ssl_verify
-        self.__date_format__ = date_format
-        self.__timestamp_fields__ = timestamp_fields
+        self._url = address + self.JSONRPC_URL
+        self._ssl_verify = ssl_verify
+        self._date_format = date_format
+        self._timestamp_fields = timestamp_fields
         if http_auth:
-            self.__basic_auth__ = b64encode(bytes(username + ':' + password, "utf-8")).decode("ascii")
-        self.__auth_token__ = self.login(username, password)
+            self._basic_auth = b64encode(bytes(username + ':' + password, "utf-8")).decode("ascii")
+        self._auth_token = self.login(username, password)
 
 
     def login(self, username, password):
@@ -43,15 +39,15 @@ class ZqlZabbixAPI():
 
     def getApiRequest(self, method, params={}, auth=True, jsonrpc='2.0', id=1):
         if method:
-            if self.__date_format__:
+            if self._date_format:
                 for key, value in params.items():
-                    if key in self.__timestamp_fields__:
-                        params[key] = int(time.mktime(time.strptime(value, self.__date_format__)))
+                    if key in self._timestamp_fields:
+                        params[key] = int(time.mktime(time.strptime(value, self._date_format)))
 
             request = {'jsonrpc': jsonrpc,
                         'method': method,
                         'params': params,
-                        'auth': self.__auth_token__,
+                        'auth': self._auth_token,
                         'id': id}
             if not auth:
                 del request['auth']
@@ -64,12 +60,12 @@ class ZqlZabbixAPI():
     def doApiRequest(self, payload):
         headers = {'Content-Type': 'application/json-rpc',
                     'User-Agent': 'python/zql'}
-        if self.__basic_auth__:
-            headers['Authorization'] = 'Basic %s' % self.__basic_auth__
+        if self._basic_auth:
+            headers['Authorization'] = 'Basic %s' % self._basic_auth
 
         if payload:
             try:
-                r = requests.post(self.__url__, headers=headers, json=payload, verify=self.__ssl_verify__)
+                r = requests.post(self._url, headers=headers, json=payload, verify=self._ssl_verify)
                 return r.json()['result']
             except KeyError as e:
                 raise Exception(r.json())
@@ -93,9 +89,9 @@ class ZqlZabbixAPI():
 
 
     def setDateFormat(self, format):
-        self.__date_format__ = format
+        self._date_format = format
 
 
     def setTimestampFields(self, fields):
-        self.__timestamp_fields__ = fields
+        self._timestamp_fields = fields
 

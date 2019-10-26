@@ -2,8 +2,22 @@ from app.common.zql_zabbix_api import ZqlZabbixAPI
 
 class ZqlEngine():
 
-    def __init__(self, server, username, password, ssl_verify, http_auth):
-        self.zbx_api = ZqlZabbixAPI(server, username, password, ssl_verify, http_auth)
+    _ssl_verify = True
+    _http_auth = False
+
+    def __init__(self, conf_parameters):
+        self._server = conf_parameters['server']
+        conf_parameters.pop('server', None)
+        if "options" in conf_parameters:
+            if "no-ssl-verify" in conf_parameters["options"]:
+                self._ssl_verify = False
+            if "http-auth" in conf_parameters["options"]:
+                self._http_auth = True
+        self._content = conf_parameters
+
+
+    def connectOnZabbix(self, username, password):
+        self.zbx_api = ZqlZabbixAPI(self._server, username, password, self._ssl_verify, self._http_auth)
 
 
     def subIterate(self, dictionary, zquery, action, pk=None, result=[]):
@@ -29,26 +43,26 @@ class ZqlEngine():
         return result
 
 
-    def iterate(self, dictionary, zbx_version_key="zabbix-version"):
+    def execute(self, zbx_version_key="zabbix-version"):
         self.result = {}
 
         try:
-            if zbx_version_key in dictionary["options"]:
+            if zbx_version_key in self._content["options"]:
                 self.result[zbx_version_key] = self.zbx_api.makeApiRequest('apiinfo.version', auth=False)
-                dictionary.pop("options", None)
+                self._content.pop("options", None)
             else:
-                dictionary.pop("options", None)
+                self._content.pop("options", None)
         except Exception:
             pass
 
-        if "date-format" in dictionary:
-            self.zbx_api.setDateFormat(dictionary["date-format"])
-            dictionary.pop('date-format', None)
-        if "timestamp-fields" in dictionary:
-            self.zbx_api.setTimestampFields(dictionary["timestamp-fields"])
-            dictionary.pop('timestamp-fields', None)
+        if "date-format" in self._content:
+            self.zbx_api.setDateFormat(self._content["date-format"])
+            self._content.pop('date-format', None)
+        if "timestamp-fields" in self._content:
+            self.zbx_api.setTimestampFields(self._content["timestamp-fields"])
+            self._content.pop('timestamp-fields', None)
 
-        for key, value in dictionary.items():
+        for key, value in self._content.items():
             zquery = {}
             if "params" in value:
                 zquery = self.zbx_api.makeApiRequest(key, value['params'])
@@ -65,6 +79,6 @@ class ZqlEngine():
         return self.result
 
 
-    def logout(self):
+    def logoutOfZabbix(self):
         self.zbx_api.logout()
 
