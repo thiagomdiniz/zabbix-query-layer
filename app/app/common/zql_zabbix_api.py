@@ -11,8 +11,8 @@ class ZqlZabbixAPI():
     def __init__(self, address, username, password, ssl_verify=True, http_auth=False, date_format=None, timestamp_fields=[]):
         self._url = address + self.JSONRPC_URL
         self._ssl_verify = ssl_verify
-        self._date_format = date_format
-        self._timestamp_fields = timestamp_fields
+        self.setDateFormat(date_format)
+        self.setTimestampFields(timestamp_fields)
         if http_auth:
             self._basic_auth = b64encode(bytes(username + ':' + password, "utf-8")).decode("ascii")
         self._auth_token = self.login(username, password)
