@@ -17,7 +17,7 @@ class ZqlEngine():
                     has_params = 1
                     fvalue = {**dictionary['params'], **{dictionary['fk']:z[pk]}}
                     sub_zquery = self.zbx_api.makeApiRequest(action, fvalue)
-                    zquery[idx][action] = sub_zquery
+                    zquery[idx][self.zbx_api.getZabbixApiMethodName(action)] = sub_zquery
                     result += zquery
                 if not has_pk and "pk" in dictionary:
                     has_pk = 1
@@ -30,11 +30,11 @@ class ZqlEngine():
 
 
     def iterate(self, dictionary, zbx_version_key="zabbix-version"):
-        self.result = []
+        self.result = {}
 
         try:
             if zbx_version_key in dictionary["options"]:
-                self.result.append({zbx_version_key:self.zbx_api.makeApiRequest('apiinfo.version', auth=False)})
+                self.result[zbx_version_key] = self.zbx_api.makeApiRequest('apiinfo.version', auth=False)
                 dictionary.pop("options", None)
             else:
                 dictionary.pop("options", None)
@@ -42,24 +42,22 @@ class ZqlEngine():
             pass
 
         for key, value in dictionary.items():
-            item = zquery = {}
+            zquery = {}
             if "params" in value:
                 zquery = self.zbx_api.makeApiRequest(key, value['params'])
-                item[key] = zquery
             if "pk" in value:
                 pk = value['pk']
                 value.pop('params', None)
                 value.pop('pk', None)
                 for idx, action in enumerate(list(value)):
-                    item[key] = self.subIterate(value[action], zquery, action, pk)
+                    self.result[self.zbx_api.getZabbixApiMethodName(key)] = self.subIterate(value[action], zquery, action, pk)
 
 
-            self.result.append(item)
+            self.result[self.zbx_api.getZabbixApiMethodName(key)] = zquery
 
         return self.result
 
 
     def logout(self):
         self.zbx_api.logout()
-
 

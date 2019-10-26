@@ -30,7 +30,8 @@ class Zabbix(Resource):
 
         content.pop('server', None)
         try:
-            result = zql.iterate(content)
+            result = {}
+            result['result'] = zql.iterate(content)
             zql.logout()
             return result
         except Exception as e:

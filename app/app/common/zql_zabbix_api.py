@@ -74,3 +74,10 @@ class ZqlZabbixAPI():
         r = self.getApiRequest(method, params, auth)
         return self.doApiRequest(r)
 
+
+    def getZabbixApiMethodName(self, name):
+        """
+        Transform "hostgroup.get" into "hostgroup"
+        """
+        return name.split(".")[0]
+
