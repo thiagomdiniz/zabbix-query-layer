@@ -42,18 +42,22 @@ We will take the payload below as an example:
 
 1. "server" is a required field. should contain your Zabbix frontend address;
 
-2. "options" is a optional field and can contain the fallowing values in a list:
+2. "options" is an optional field and can contain the fallowing values in a list:
 	1. "zabbix-version": When used adds to the response the version of Zabbix queried;
 	2. "no-ssl-verify": Use if your Zabbix frontend uses ssl (https) with invalid certificate;
 	3. "http-auth": Use if your Zabbix frontend uses HTTP authentication;
 
-3. Is the name of the Zabbix API method;
+3. "date-format" is an optional field that defines the time format. [See the time lib docs](https://docs.python.org/3/library/time.html#time.strftime);
 
-4. "params" is a required field. Fill in this field in the same way as the params field described in the official documentation. Use {} for empty params;
+4. "timestamp-fields" defines the fields in which the date should be converted to timestamp. Required only when using "date-format";
 
-5. "pk" is a required field only when the query has subqueries. Is the ID / primary key of the object;
+5. Is the name of the Zabbix API method;
 
-6. "fk" is a required field only for subqueries. Is the field that will be added to the subquery filter with the ID / primary key value of the parent query result.
+6. "pk" is a required field only when the query has subqueries. Is the ID / primary key of the object;
+
+7. "params" is a required field. Fill in this field in the same way as the params field described in the official documentation. Use {} for empty params;
+
+8. "fk" is a required field only for subqueries. Is the field that will be added to the subquery filter with the ID / primary key value of the parent query result.
 
 ## Request examples
 
@@ -86,24 +90,22 @@ curl -H 'Content-type:application/json' -X POST http://localhost/zabbix -d '
 
 Output:
 ```json
-[
-    {
-        "trigger.get": [
+{
+    "result": {
+        "trigger": [
             {
                 "triggerid": "15414",
                 "description": "DC"
             }
-        ]
-    },
-    {
-        "host.get": [
+        ],
+        "host": [
             {
                 "hostid": "10084",
                 "name": "Zabbix server"
             }
         ]
     }
-]
+}
 ```
 
 ### More complex request
@@ -133,29 +135,27 @@ curl -H 'Content-type:application/json' -X POST http://localhost/zabbix -d '
 
 Output:
 ```json
-[
-    {
-        "zabbix-version": "4.2.3"
-    },
-    {
-        "hostgroup.get": [
+{
+    "result": {
+        "zabbix-version": "4.2.3",
+        "hostgroup": [
             {
                 "groupid": "1",
                 "name": "Templates",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "2",
                 "name": "Linux servers",
                 "internal": "0",
                 "flags": "0",
-                "host.get": [
+                "host": [
                     {
                         "hostid": "10084",
                         "name": "Zabbix server",
-                        "item.get": [
+                        "item": [
                             {
                                 "itemid": "23306",
                                 "name": "CPU $2 time",
@@ -170,11 +170,11 @@ Output:
                 "name": "Zabbix servers",
                 "internal": "0",
                 "flags": "0",
-                "host.get": [
+                "host": [
                     {
                         "hostid": "10084",
                         "name": "Zabbix server",
-                        "item.get": [
+                        "item": [
                             {
                                 "itemid": "23306",
                                 "name": "CPU $2 time",
@@ -189,96 +189,94 @@ Output:
                 "name": "Discovered hosts",
                 "internal": "1",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "6",
                 "name": "Virtual machines",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "7",
                 "name": "Hypervisors",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "8",
                 "name": "Templates/Modules",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "9",
                 "name": "Templates/Network Devices",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "10",
                 "name": "Templates/Operating Systems",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "11",
                 "name": "Templates/Servers Hardware",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "12",
                 "name": "Templates/Applications",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "13",
                 "name": "Templates/Databases",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "14",
                 "name": "Templates/Virtualization",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "15",
                 "name": "My Home",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "16",
                 "name": "Remote site",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             },
             {
                 "groupid": "17",
                 "name": "Remote site/Linux",
                 "internal": "0",
                 "flags": "0",
-                "host.get": []
+                "host": []
             }
-        ]
-    },
-    {
-        "trigger.get": [
+        ],
+        "trigger": [
             {
                 "triggerid": "15414",
                 "expression": "{16962}<0",
@@ -303,7 +301,7 @@ Output:
             }
         ]
     }
-]
+}
 ```
 
 ### Create a host
@@ -314,7 +312,7 @@ curl -H 'Content-type:application/json' -X POST http://localhost/zabbix -d '
 	   "options":["zabbix-version","no-ssl-verify"],
 	   "host.create":{
 	      "params":{
-        	"host": "opaaa",
+        	"host": "one-test",
         	"interfaces": [
 	            {
                 	"type": 1,
@@ -348,16 +346,14 @@ curl -H 'Content-type:application/json' -X POST http://localhost/zabbix -d '
 
 Output:
 ```json
-[
-    {
-        "zabbix-version": "4.2.3"
-    },
-    {
-        "host.create": {
+{
+    "result": {
+        "zabbix-version": "4.2.3",
+        "host": {
             "hostids": [
-                "10287"
+                "10290"
             ]
         }
     }
-]
+}
 ```
