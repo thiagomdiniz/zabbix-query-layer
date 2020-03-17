@@ -66,7 +66,11 @@ class ZqlZabbixAPI():
         if payload:
             try:
                 r = requests.post(self._url, headers=headers, json=payload, verify=self._ssl_verify)
-                return r.json()['result']
+                result = r.json()['result']
+                if self._timestamp_fields:
+                    result = self.clockFieldsConverter(result)
+
+                return result
             except KeyError as e:
                 raise Exception(r.json())
             except Exception as e:
@@ -94,4 +98,27 @@ class ZqlZabbixAPI():
 
     def setTimestampFields(self, fields):
         self._timestamp_fields = fields
+
+
+    def dateToTimestamp(self, date):
+        return int(time.mktime(time.strptime(date, self._date_format)))
+
+
+    def timestampToDate(self, timestamp):
+        return time.strftime(self._date_format, time.localtime(int(timestamp)))
+
+
+    def clockFieldsConverter(self, result):
+        try:
+            for idx, item in enumerate(result):
+                for key, value in dict(item).items():
+                    if key in self._timestamp_fields:
+                        result[idx][key] = self.timestampToDate(value)
+                    if isinstance(value, list):
+                        result[idx][key] = self.clockFieldsConverter(value)
+
+        except Exception as e:
+            pass
+
+        return result
 
