@@ -4,7 +4,7 @@ ZQL is a Flask (Python) application to make it easier to use the Zabbix API in s
 
 ## Run the application with Docker
 
-sudo docker run -d -p 80:80 --name zql thiagomdiniz/zabbix-api-query-layer
+sudo docker run -d -p 80:80 --name zql -e TZ="America/Sao_Paulo" thiagomdiniz/zabbix-api-query-layer
 
 ## Endpoints
 
