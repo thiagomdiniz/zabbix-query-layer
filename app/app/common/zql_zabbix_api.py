@@ -87,9 +87,9 @@ class ZqlZabbixAPI():
 
     def getZabbixApiMethodName(self, name):
         """
-        Transform "hostgroup.get" into "hostgroup"
+        Transform "hostgroup.get" into "hostgroup_get"
         """
-        return name.split(".")[0]
+        return name.replace(".", "_")
 
 
     def setDateFormat(self, format):
